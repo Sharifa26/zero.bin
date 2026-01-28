@@ -6,6 +6,7 @@ export default function HomePage() {
   const [content, setContent] = useState("");
   const [ttl, setTtl] = useState("");
   const [maxViews, setMaxViews] = useState("");
+  const [copied, setCopied] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,7 +15,6 @@ export default function HomePage() {
     setResult(null);
 
     const body: any = { content };
-
     if (ttl) body.ttl_seconds = Number(ttl);
     if (maxViews) body.max_views = Number(maxViews);
 
@@ -25,7 +25,6 @@ export default function HomePage() {
     });
 
     const data = await res.json();
-
     if (!res.ok) {
       setError(data.error || "Something went wrong");
       return;
@@ -35,47 +34,55 @@ export default function HomePage() {
   }
 
   return (
-    <main style={{ maxWidth: 600, margin: "40px auto" }}>
-      <h1>Create a Paste</h1>
+    <div className="container">
+      <header className="header">ZeroBin</header>
 
-      <textarea
-        rows={8}
-        style={{ width: "100%" }}
-        placeholder="Paste your text here..."
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-      />
-
-      <div style={{ marginTop: 10 }}>
-        <input
-          type="number"
-          placeholder="TTL (seconds, optional)"
-          value={ttl}
-          onChange={(e) => setTtl(e.target.value)}
+      <div className="card grid">
+        <textarea
+          className="textarea"
+          placeholder="Paste your text here..."
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
         />
-      </div>
 
-      <div style={{ marginTop: 10 }}>
-        <input
-          type="number"
-          placeholder="Max views (optional)"
-          value={maxViews}
-          onChange={(e) => setMaxViews(e.target.value)}
-        />
+        <div className="side">
+          <input
+            type="number"
+            placeholder="Seconds (TTL)"
+            value={ttl}
+            onChange={(e) => setTtl(e.target.value)}
+            suppressHydrationWarning
+          />
+          <input
+            type="number"
+            placeholder="Max Views"
+            value={maxViews}
+            onChange={(e) => setMaxViews(e.target.value)}
+            suppressHydrationWarning
+          />
+          <button onClick={createPaste}>Create</button>
+        </div>
       </div>
-
-      <button style={{ marginTop: 15 }} onClick={createPaste}>
-        Create Paste
-      </button>
 
       {result && (
-        <p style={{ marginTop: 20 }}>
-          Shareable link: <br />
-          <a href={result}>{result}</a>
-        </p>
+        <div className="result">
+          <span>Your paste link</span>
+          <div className="link">
+            <input readOnly value={result} />
+            <button
+              onClick={async () => {
+                await navigator.clipboard.writeText(result);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1500);
+              }}
+            >
+              {copied ? "Copied ✓" : "Copy"}
+            </button>
+          </div>
+        </div>
       )}
 
-      {error && <p style={{ marginTop: 20, color: "red" }}>{error}</p>}
-    </main>
+      {error && <p className="error">{error}</p>}
+    </div>
   );
 }

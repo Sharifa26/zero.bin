@@ -1,3 +1,5 @@
+import "./style/gobal.css";
+
 export default function RootLayout({
   children,
 }: {

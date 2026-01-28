@@ -6,7 +6,6 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { content, ttl_seconds, max_views } = body;
 
-    // Validation
     if (!content || typeof content !== "string") {
       return Response.json({ error: "content is required" }, { status: 400 });
     }
@@ -45,15 +44,12 @@ export async function POST(req: Request) {
       max_views: max_views ?? null,
     };
 
-    // Save paste
     await redis.set(pasteKey, JSON.stringify(data));
 
-    // Set TTL in Redis (optional)
     if (ttl_seconds) {
       await redis.expire(pasteKey, ttl_seconds);
     }
 
-    // Initialize views
     await redis.set(`paste:${id}:views`, 0);
 
     const url = `${new URL(req.url).origin}/p/${id}`;

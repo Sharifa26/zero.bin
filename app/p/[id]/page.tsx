@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
+import PasteActions from "./PasteActions";
 
 async function getPaste(id: string) {
   const h = await headers();
@@ -20,9 +21,22 @@ export default async function PastePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-
   const paste = await getPaste(id);
   if (!paste) notFound();
 
-  return <pre style={{ whiteSpace: "pre-wrap" }}>{paste.content}</pre>;
+  return (
+    <div className="container">
+      <header className="header">ZeroBin</header>
+
+      <div className="card grid">
+        <pre className="view">{paste.content}</pre>
+
+        {/* pass remaining views */}
+        <PasteActions
+          content={paste.content}
+          remainingViews={paste.remaining_views}
+        />
+      </div>
+    </div>
+  );
 }

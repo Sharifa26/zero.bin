@@ -6,31 +6,31 @@ export async function GET(
 ) {
   const { id } = await context.params;
 
-  const raw = await redis.get(`paste:${id}`);
+  const pasteKey = `paste:${id}`;
+  const viewsKey = `paste:${id}:views`;
+
+  const raw = await redis.get(pasteKey);
   if (!raw) {
     return Response.json({ error: "not found" }, { status: 404 });
   }
 
   const paste = JSON.parse(raw);
 
-  // TEST_MODE time handling
-  const testMode = process.env.TEST_MODE === "1";
-  const now = testMode ? Number(req.headers.get("x-test-now-ms")) : Date.now();
+  const isTest = process.env.TEST_MODE === "1";
+  const headerNow = req.headers.get("x-test-now-ms");
 
-  // Expiry check
+  const now = isTest && headerNow ? Number(headerNow) : Date.now();
+
   if (paste.expires_at && now >= paste.expires_at) {
     return Response.json({ error: "expired" }, { status: 404 });
   }
 
-  // View count check
-  const viewsKey = `paste:${id}:views`;
   const views = Number(await redis.get(viewsKey)) || 0;
 
   if (paste.max_views !== null && views >= paste.max_views) {
     return Response.json({ error: "view limit exceeded" }, { status: 404 });
   }
 
-  // Increment views
   const newViews = await redis.incr(viewsKey);
 
   const remaining_views =
