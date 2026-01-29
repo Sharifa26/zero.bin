@@ -1,12 +1,25 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .side {
+    position: static;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+
 :root {
   --primary: #50c9ce;
-  --bg: #595a5a;
+  --bg: #f6f7e0;
   --card: #1f2621;
   --text: #eafdfe;
   --muted: #9fbfc2;
-  --border: #3fafb4;
+  --border: #4a8c8e;
 }
 
 * {
@@ -24,13 +37,16 @@ body {
   max-width: 900px;
   margin: 40px auto;
   padding: 0 16px;
+  font-size: 14px;
+  color: var(--card);
+  font-weight: bold
 }
 
 .header {
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 20px;
-  color: var(--primary);
+  color: var(--card);
 }
 
 .card {
@@ -42,27 +58,41 @@ body {
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr 200px;
+  grid-template-columns: minmax(0, 1fr) 220px;
   gap: 16px;
+  align-items: start;
 }
+
 
 .textarea,
 .view {
-  background: #141a16;
+  background: var(--input-bg);
   color: var(--text);
-  border: none;
-  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
   padding: 14px;
   resize: none;
-  min-height: 300px;
-  font-family: inherit;
+
+
+  min-height: 320px;   
+  max-height: 420px; 
+  overflow-y: auto;       
+  overflow-x: auto;       
+
+  white-space: pre-wrap;
+  word-break: break-word;
+
   font-size: 14px;
+  line-height: 1.5;
 }
+
 
 .side {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  position: sticky;
+  top: 20px;
 }
 
 .side input {
@@ -71,6 +101,7 @@ body {
   border: 1px solid var(--border);
   background: transparent;
   color: var(--text);
+  font-weight: bold
 }
 
 button {
@@ -81,6 +112,7 @@ button {
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
+  font-weight: bold;
 }
 
 button.ghost {
@@ -104,7 +136,8 @@ button.ghost {
   border-radius: 6px;
   border: 1px solid var(--border);
   background: transparent;
-  color: var(--text);
+  color: var(--card);
+  font-weight: bold
 }
 
 .error {
